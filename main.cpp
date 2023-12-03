@@ -48,8 +48,13 @@ void close();
 
 void setSprite(int index, int x, int y, int w, int h);
 
+int selected_display = 0;
+
 int main( int argc, char* args[] ){
     //Start up SDL and create window
+    if(argc > 0){
+        selected_display = atoi(args[0]);
+    }
     if( !init() )
     {
         printf( "Failed to initialize!\n" );
@@ -123,8 +128,31 @@ bool init(){
     }
     else
     {
+        // choose display
+        // enumerate displays
+        int displays = SDL_GetNumVideoDisplays();
+
+        // get display bounds for all displays
+        SDL_Rect displayBounds[4];
+        for( int i = 0; i < displays && i < 4; i++ ) {
+            displayBounds[i] = SDL_Rect();
+            SDL_GetDisplayBounds( i, &displayBounds[i] );
+        }
+        int winx = 0;
+        int winy = 0;
+        int winw = 0;
+        int winh = 0;
+        // set window position based on display count
+        if(selected_display < (displays - 1)) {
+            winx = displayBounds[selected_display].x;
+            winy = displayBounds[selected_display].y;
+            winw = displayBounds[selected_display].w;
+            winh = displayBounds[selected_display].h;
+        }
+
+
         //Create window
-        gWindow = SDL_CreateWindow( "SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
+        gWindow = SDL_CreateWindow( "SDL Tutorial", winx, winy, winw, winh, SDL_WINDOW_SHOWN );
         if( gWindow == NULL )
         {
             printf( "Window could not be created! SDL_Error: %s\n", SDL_GetError() );
