@@ -55,7 +55,7 @@ int selected_display = 0;
 int main( int argc, char* args[] ){
     //Start up SDL and create window
     if(argc > 0){
-        selected_display = atoi(args[0]);
+        selected_display = atoi(args[1]);
     }
     if( !init() )
     {
