@@ -1,6 +1,6 @@
 #include <SDL.h>
 #include <SDL_image.h>
-#include <stdio.h>
+#include <iostream>
 #include <cstdlib>
 #include "LTexture.hpp"
 
@@ -26,6 +26,8 @@ SDL_Rect gSpriteClips[7];
 
 int screen_width = 0;
 int screen_height = 0;
+SDL_Rect displayBounds[4];
+
 
 //The window we'll be rendering to
 SDL_Window* gWindow = NULL;
@@ -85,27 +87,27 @@ int main( int argc, char* args[] ){
                                 break;
                         }
                     }
-
-                    isMouthOpen = !isMouthOpen;
-
-                    //Clear screen
-                    SDL_SetRenderDrawColor( gRenderer, 0, 0, 0, 0 );
-                    SDL_RenderClear( gRenderer );
-
-                    SDL_RendererFlip flip = SDL_FLIP_HORIZONTAL;
-
-                    //Render top left sprite
-                    gSpriteSheetTexture.render( 0, 0, &gSpriteClips[ EYE_CLOSED_KU ] );
-                    //Render top left sprite
-                    gSpriteSheetTexture.renderEx( 750, 0, &gSpriteClips[ EYE_CLOSED_KU ], 0, NULL,  flip);
-                    //Render mouth
-                    gSpriteSheetTexture.render( screen_width/2 - 300, screen_height - 600, &gSpriteClips[ isMouthOpen ? MOUTH_OPEN : MOUTH_CLOSED ] );
-
-                    //Update screen
-                    SDL_RenderPresent( gRenderer );
-
-                    SDL_Delay(rand() % 300 + 150);
                 } 
+
+                isMouthOpen = !isMouthOpen;
+
+                //Clear screen
+                SDL_SetRenderDrawColor( gRenderer, 0, 0, 0, 0 );
+                SDL_RenderClear( gRenderer );
+
+                SDL_RendererFlip flip = SDL_FLIP_HORIZONTAL;
+
+                //Render top left sprite
+                gSpriteSheetTexture.render( 0, 0, &gSpriteClips[ EYE_CLOSED_KU ] );
+                //Render top left sprite
+                gSpriteSheetTexture.renderEx( 750, 0, &gSpriteClips[ EYE_CLOSED_KU ], 0, NULL,  flip);
+                //Render mouth
+                gSpriteSheetTexture.render( screen_width/2 - 300, screen_height - 600, &gSpriteClips[ isMouthOpen ? MOUTH_OPEN : MOUTH_CLOSED ] );
+
+                //Update screen
+                SDL_RenderPresent( gRenderer );
+
+                SDL_Delay(rand() % 300 + 150);
             }
         }
     }
@@ -133,26 +135,22 @@ bool init(){
         int displays = SDL_GetNumVideoDisplays();
 
         // get display bounds for all displays
-        SDL_Rect displayBounds[4];
         for( int i = 0; i < displays && i < 4; i++ ) {
             displayBounds[i] = SDL_Rect();
             SDL_GetDisplayBounds( i, &displayBounds[i] );
         }
         int winx = 0;
         int winy = 0;
-        int winw = 0;
-        int winh = 0;
         // set window position based on display count
-        if(selected_display < (displays - 1)) {
+        if(selected_display < displays && selected_display < 4) {
             winx = displayBounds[selected_display].x;
             winy = displayBounds[selected_display].y;
-            winw = displayBounds[selected_display].w;
-            winh = displayBounds[selected_display].h;
-        }
-
+            screen_width = displayBounds[selected_display].w;
+            screen_height = displayBounds[selected_display].h;
+        }  
 
         //Create window
-        gWindow = SDL_CreateWindow( "SDL Tutorial", winx, winy, winw, winh, SDL_WINDOW_SHOWN );
+        gWindow = SDL_CreateWindow( "SDL Tutorial", winx, winy, screen_width, screen_height, SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS);
         if( gWindow == NULL )
         {
             printf( "Window could not be created! SDL_Error: %s\n", SDL_GetError() );
@@ -164,7 +162,7 @@ bool init(){
             SDL_SetWindowFullscreen(gWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
 
             //Set params
-            SDL_GetWindowSize(gWindow, &screen_width, &screen_height);
+            // SDL_GetWindowSize(gWindow, &screen_width, &screen_height);
 
             //Create renderer for window
 			gRenderer = SDL_CreateRenderer( gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
