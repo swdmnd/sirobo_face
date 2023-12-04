@@ -150,6 +150,11 @@ bool init(){
             screen_height = displayBounds[selected_display].h;
         }  
 
+
+        std::cout << winx << std::endl;
+        std::cout << winy << std::endl;
+        std::cout << screen_width << std::endl;
+        std::cout << screen_height << std::endl;
         //Create window
         gWindow = SDL_CreateWindow( "SDL Tutorial", winx, winy, screen_width, screen_height, SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS);
         if( gWindow == NULL )
