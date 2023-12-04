@@ -133,7 +133,8 @@ bool init(){
         // choose display
         // enumerate displays
         int displays = SDL_GetNumVideoDisplays();
-
+        std::cout << displays << std::endl;
+        std::cout << selected_display << std::endl;
         // get display bounds for all displays
         for( int i = 0; i < displays && i < 4; i++ ) {
             displayBounds[i] = SDL_Rect();
